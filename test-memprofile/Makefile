@@ -1,7 +1,7 @@
 # Simplistic Makefile for malloc_count example
 
-CC = gcc
-CXX = g++
+CC = mpicc
+CXX = mpic++
 CFLAGS = -g -W -Wall -ansi -I..
 CXXFLAGS = -g -W -Wall -ansi -I..
 LDFLAGS =

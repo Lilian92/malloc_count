@@ -25,9 +25,18 @@
 #include <vector>
 #include <set>
 
-int main()
+#include <mpi.h>
+
+extern bool useM;
+
+int main(int argc, char **argv)
 {
+    MPI_Init(&argc, &argv);
+
+    useM = true;
+
     MemProfile mp("memprofile.txt", 0.1, 1024);
+    
 
     {
         std::vector<int> v;
@@ -41,5 +50,8 @@ int main()
             v.insert(i);
     }
 
+    useM = false;
+
+    MPI_Finalize();
     return 0;
 }

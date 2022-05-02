@@ -32,14 +32,21 @@
 #include <stdio.h>
 #include <string.h>
 
+#include <mpi.h>
 void function_use_stack()
 {
     char data[64*1024];
     memset(data, 1, sizeof(data));
 }
 
-int main()
+extern bool useM;
+
+int main(int argc, char **argv)
 {
+    useM = false;
+     MPI_Init(&argc, &argv);
+
+     useM = true;
     /* allocate and free some memory */
     void* a = malloc(2*1024*1024);
     free(a);
@@ -68,10 +75,13 @@ int main()
     {
         void* base = stack_count_clear();
         function_use_stack();
-        printf("maximum stack usage: %lld\n",
+        printf("MPI rank %lld: maximum stack usage: %lld\n",
                (long long)stack_count_usage(base));
     }
 
+    useM = false;
+
+    MPI_Finalize();
     return 0;
 }
 
