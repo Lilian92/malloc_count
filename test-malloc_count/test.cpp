@@ -44,26 +44,33 @@ extern bool useM;
 int main(int argc, char **argv)
 {
     useM = false;
-     MPI_Init(&argc, &argv);
+    MPI_Init(&argc, &argv);
 
-     useM = true;
+    int rank, size;
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    MPI_Comm_size(MPI_COMM_WORLD, &size);
+
+    char rankStr[100];
+    sprintf(rankStr, "MPI rank %d", rank);
+
+    useM = true;
     /* allocate and free some memory */
     void* a = malloc(2*1024*1024);
     free(a);
 
     /* query malloc_count for information */
     printf("our peak memory allocation: %lld\n",
-           (long long)malloc_count_peak());
+            (long long)malloc_count_peak());
 
     /* use realloc() */
     void* b = malloc(3*1024*1024);
-    malloc_count_print_status();
+    malloc_count_print_status(rankStr);
 
     b = realloc(b, 2*1024*1024);
-    malloc_count_print_status();
+    malloc_count_print_status(rankStr);
 
     b = realloc(b, 4*1024*1024);
-    malloc_count_print_status();
+    malloc_count_print_status(rankStr);
 
     free(b);
 
@@ -75,8 +82,8 @@ int main(int argc, char **argv)
     {
         void* base = stack_count_clear();
         function_use_stack();
-        printf("MPI rank %lld: maximum stack usage: %lld\n",
-               (long long)stack_count_usage(base));
+        printf("MPI rank %d: maximum stack usage: %lld\n",
+                rank, (long long)stack_count_usage(base));
     }
 
     useM = false;

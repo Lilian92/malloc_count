@@ -132,10 +132,10 @@ extern size_t malloc_count_num_allocs(void)
 }
 
 /* user function which prints current and peak allocation to stderr */
-extern void malloc_count_print_status(void)
+extern void malloc_count_print_status(const char * str)
 {
-    fprintf(stderr, PPREFIX "current %'lld, peak %'lld\n",
-            curr, peak);
+    fprintf(stderr, PPREFIX "%s : current %'lld, peak %'lld\n",
+            str, curr, peak);
 }
 
 /* user function to supply a memory profile callback */

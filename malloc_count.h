@@ -57,7 +57,7 @@ extern void malloc_count_set_callback(malloc_count_callback_type cb,
                                       void* cookie);
 
 /* user function which prints current and peak allocation to stderr */
-extern void malloc_count_print_status(void);
+extern void malloc_count_print_status(const char *);
 
 #ifdef __cplusplus
 } /* extern "C" */
