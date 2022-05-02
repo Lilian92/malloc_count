@@ -13,7 +13,7 @@ all: test
 %.o: %.c
 	$(CC) $(CFLAGS) -c -o $@ $<
 
-%.o: %.cc
+%.o: %.cpp
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
 test: $(OBJS)

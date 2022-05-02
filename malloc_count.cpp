@@ -35,6 +35,8 @@
 
 #include "malloc_count.h"
 
+bool useM = false;
+
 /* user-defined options for output malloc()/free() operations to stderr */
 
 static const int log_operations = 0;    /* <-- set this to 1 for log output */
@@ -60,7 +62,7 @@ static realloc_type real_realloc = NULL;
 static const size_t sentinel = 0xDEADC0DE;
 
 /* a simple memory heap for allocations prior to dlsym loading */
-#define INIT_HEAP_SIZE 1024*1024
+#define INIT_HEAP_SIZE 1024*1024*1024
 static char init_heap[INIT_HEAP_SIZE];
 static size_t init_heap_use = 0;
 static const int log_operations_init_heap = 0;
@@ -150,6 +152,8 @@ void malloc_count_set_callback(malloc_count_callback_type cb, void* cookie)
 /* exported malloc symbol that overrides loading from libc */
 extern void* malloc(size_t size)
 {
+    if ( (!useM) && real_malloc) { return (*real_malloc)(size); }
+
     void* ret;
 
     if (size == 0) return NULL;
@@ -197,6 +201,8 @@ extern void* malloc(size_t size)
 /* exported free symbol that overrides loading from libc */
 extern void free(void* ptr)
 {
+    if ( (!useM) && real_free) { (*real_free)(ptr); return; }
+
     size_t size;
 
     if (!ptr) return;   /* free(NULL) is no operation */
@@ -249,6 +255,8 @@ extern void* calloc(size_t nmemb, size_t size)
 /* exported realloc() symbol that overrides loading from libc */
 extern void* realloc(void* ptr, size_t size)
 {
+    if ( (!useM) && real_realloc ) { return (*real_realloc)(ptr, size); }
+
     void* newptr;
     size_t oldsize;
 
@@ -297,7 +305,7 @@ extern void* realloc(void* ptr, size_t size)
 
     if (*(size_t*)((char*)ptr + alignment - sizeof(size_t)) != sentinel) {
         fprintf(stderr, PPREFIX
-                "free(%p) has no sentinel !!! memory corruption?\n", ptr);
+                "realloc(%p) has no sentinel !!! memory corruption?\n", ptr);
     }
 
     oldsize = *(size_t*)ptr;
