@@ -41,6 +41,9 @@ void function_use_stack()
 
 extern bool useM;
 
+#include <vector>
+std::vector<char> data;
+
 int main(int argc, char **argv)
 {
     useM = false;
@@ -50,32 +53,36 @@ int main(int argc, char **argv)
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &size);
 
+    useM = true;
     char rankStr[100];
     sprintf(rankStr, "MPI rank %d", rank);
 
-    useM = true;
+    malloc_count_print_status(rankStr);
+    data.resize(1);
+    malloc_count_print_status(rankStr);
+
     /* allocate and free some memory */
-    void* a = malloc(2*1024*1024);
+    void* a = malloc(20);
     free(a);
 
     /* query malloc_count for information */
-    printf("our peak memory allocation: %lld\n",
-            (long long)malloc_count_peak());
+    //printf("our peak memory allocation: %lld\n",
+    //        (long long)malloc_count_peak());
 
     /* use realloc() */
-    void* b = malloc(3*1024*1024);
+    void* b = malloc(300);
     malloc_count_print_status(rankStr);
 
-    b = realloc(b, 2*1024*1024);
+    b = realloc(b, 4000);
     malloc_count_print_status(rankStr);
 
-    b = realloc(b, 4*1024*1024);
+    b = realloc(b, 50000);
     malloc_count_print_status(rankStr);
 
     free(b);
 
     /* some unusual realloc calls */
-    void* c = realloc(NULL, 1*1024*1024);
+    void* c = realloc(NULL, 600000);
     c = realloc(c, 0);
 
     /* show how stack_count works */

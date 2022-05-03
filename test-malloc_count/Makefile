@@ -1,6 +1,6 @@
 # Simplistic Makefile for malloc_count example
 
-CC = mpicc
+CC = mpic++
 CFLAGS = -g -W -Wall -ansi -I..
 LDFLAGS =
 LIBS = -ldl
